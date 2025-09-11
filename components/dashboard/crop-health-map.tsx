@@ -24,7 +24,7 @@ interface CropHealthData {
     x: number
     y: number
     status: "healthy" | "warning" | "critical"
-    type: "crop" | "irrigation" | "pest" | "temperature"
+    type: "crop" | "irrigation" | "pest" | "temperature"|"disease" 
     value: string
     details?: string
     ndvi?: number

@@ -7,13 +7,13 @@ import { Badge } from "@/components/ui/badge"
 import { MapPin, Zap, Droplets, Bug, Thermometer } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-interface FieldZone {
+type FieldZone = {
   id: string
   name: string
-  x: number // percentage from left
-  y: number // percentage from top
+  x: number
+  y: number
   status: "healthy" | "warning" | "critical"
-  type: "crop" | "irrigation" | "pest" | "temperature"
+  type: "crop" | "irrigation" | "pest" | "temperature" | "disease"  
   value: string
   details?: string
 }

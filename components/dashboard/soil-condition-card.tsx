@@ -42,6 +42,7 @@ interface SoilConditionCardProps {
 }
 
 export function SoilConditionCard({ data, compact = false, className }: SoilConditionCardProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const getStatusFromValue = (
     value: number,
     optimal: { min: number; max: number },

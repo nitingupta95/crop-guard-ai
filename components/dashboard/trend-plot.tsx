@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle, CardAction } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -35,6 +35,8 @@ interface TrendPlotData {
   }>
 }
 
+type TimeRange = "24h" | "7d" | "30d" | "90d"
+
 interface TrendPlotProps {
   data: TrendPlotData[]
   selectedMetric?: string
@@ -44,10 +46,9 @@ interface TrendPlotProps {
 
 export function TrendPlot({ data, selectedMetric, onMetricChange, className }: TrendPlotProps) {
   const [activeMetric, setActiveMetric] = useState(selectedMetric || data[0]?.metric)
-  const [timeRange, setTimeRange] = useState<"24h" | "7d" | "30d" | "90d">("7d")
+  const [timeRange, setTimeRange] = useState<TimeRange>("24h")
 
   const currentData = data.find((d) => d.metric === activeMetric)
-
   if (!currentData) return null
 
   const chartData = currentData.data.map((point) => ({
@@ -88,13 +89,12 @@ export function TrendPlot({ data, selectedMetric, onMetricChange, className }: T
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl font-semibold">Trend Analysis & Predictions</CardTitle>
-          <CardAction>
-            <Button variant="outline" size="sm">
-              <Calendar className="h-4 w-4" />
-            </Button>
-          </CardAction>
+          <Button variant="outline" size="sm">
+            <Calendar className="h-4 w-4" />
+          </Button>
         </div>
       </CardHeader>
+
       <CardContent className="space-y-4">
         {/* Metric Selection */}
         <div className="flex flex-wrap gap-2">
@@ -110,8 +110,8 @@ export function TrendPlot({ data, selectedMetric, onMetricChange, className }: T
           ))}
         </div>
 
-        {/* Time Range Selection */}
-        <Tabs value={timeRange} onValueChange={(value) => setTimeRange(value as any)}>
+        {/* Tabs for Time Range + Chart + Summary */}
+        <Tabs value={timeRange} onValueChange={(value) => setTimeRange(value as TimeRange)}>
           <TabsList className="grid w-fit grid-cols-4">
             <TabsTrigger value="24h">24H</TabsTrigger>
             <TabsTrigger value="7d">7D</TabsTrigger>
@@ -127,11 +127,15 @@ export function TrendPlot({ data, selectedMetric, onMetricChange, className }: T
                   <Badge variant="outline" className="text-xs">
                     {currentData.prediction.model} Model
                   </Badge>
-                  <span className="text-xs text-muted-foreground">{currentData.prediction.accuracy}% accuracy</span>
+                  <span className="text-xs text-muted-foreground">
+                    {currentData.prediction.accuracy}% accuracy
+                  </span>
                 </div>
                 <div className="text-2xl font-bold text-foreground">
                   {currentData.prediction.nextValue.toFixed(1)}
-                  <span className="text-sm font-normal text-muted-foreground ml-1">{currentData.unit}</span>
+                  <span className="text-sm font-normal text-muted-foreground ml-1">
+                    {currentData.unit}
+                  </span>
                 </div>
                 <p className="text-sm text-muted-foreground">Predicted next value</p>
               </div>
@@ -140,11 +144,19 @@ export function TrendPlot({ data, selectedMetric, onMetricChange, className }: T
                 <div className="flex items-center gap-2 mb-2">
                   {(() => {
                     const Icon = getTrendIcon(currentData.prediction.trend)
-                    return <Icon className={cn("h-4 w-4", getTrendColor(currentData.prediction.trend))} />
+                    return (
+                      <Icon
+                        className={cn("h-4 w-4", getTrendColor(currentData.prediction.trend))}
+                      />
+                    )
                   })()}
-                  <span className="text-sm font-medium capitalize">{currentData.prediction.trend}</span>
+                  <span className="text-sm font-medium capitalize">
+                    {currentData.prediction.trend}
+                  </span>
                 </div>
-                <div className="text-2xl font-bold text-foreground">{currentData.prediction.confidence}%</div>
+                <div className="text-2xl font-bold text-foreground">
+                  {currentData.prediction.confidence}%
+                </div>
                 <p className="text-sm text-muted-foreground">Confidence level</p>
               </div>
 
@@ -153,7 +165,9 @@ export function TrendPlot({ data, selectedMetric, onMetricChange, className }: T
                   <Activity className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm font-medium">Alerts</span>
                 </div>
-                <div className="text-2xl font-bold text-foreground">{currentData.alerts?.length || 0}</div>
+                <div className="text-2xl font-bold text-foreground">
+                  {currentData.alerts?.length || 0}
+                </div>
                 <p className="text-sm text-muted-foreground">Active anomalies</p>
               </div>
             </div>
@@ -174,18 +188,23 @@ export function TrendPlot({ data, selectedMetric, onMetricChange, className }: T
                 <h4 className="text-sm font-medium">Recent Alerts</h4>
                 <div className="space-y-2">
                   {currentData.alerts.slice(0, 3).map((alert, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 bg-muted/20 rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center gap-3 p-3 bg-muted/20 rounded-lg"
+                    >
                       <div
                         className={cn(
                           "w-2 h-2 rounded-full",
                           alert.type === "anomaly" && "bg-destructive",
                           alert.type === "threshold" && "bg-yellow-500",
-                          alert.type === "prediction" && "bg-blue-500",
+                          alert.type === "prediction" && "bg-blue-500"
                         )}
                       />
                       <div className="flex-1">
                         <p className="text-sm font-medium">{alert.message}</p>
-                        <p className="text-xs text-muted-foreground">{new Date(alert.timestamp).toLocaleString()}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(alert.timestamp).toLocaleString()}
+                        </p>
                       </div>
                       <Badge variant="outline" className="text-xs capitalize">
                         {alert.type}

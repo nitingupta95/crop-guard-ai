@@ -11,15 +11,40 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AlertTriangle, Bug, Droplets, Wind, Search, Filter, Bell, CheckCircle, Clock } from "lucide-react"
 
-const mockAlerts = [
+// ------------------ Types ------------------
+type Alert = {
+  id: string
+  type: "error" | "warning" | "info" | "success"
+  title: string
+  message: string
+  timestamp: Date
+  fieldName: string
+  severity: "critical" | "medium" | "low"
+  category: "pest" | "irrigation" | "weather" | "disease" | "system"
+  status: "active" | "acknowledged" | "resolved"
+  affectedArea: number
+  estimatedLoss: number
+}
+
+type Notification = {
+  id: string
+  type: "success" | "error" | "info" | "warning"
+  title: string
+  message: string
+  timestamp: Date
+  autoClose?: boolean
+}
+
+// ------------------ Mock Data ------------------
+const mockAlerts: Alert[] = [
   {
     id: "alert-1",
-    type: "error" as const,
+    type: "error",
     title: "Critical Pest Infestation",
     message: "Severe aphid infestation detected in North Field Zone C. Immediate action required.",
     timestamp: new Date(Date.now() - 30 * 60 * 1000),
     fieldName: "North Field",
-    severity: "critical" as const,
+    severity: "critical",
     category: "pest",
     status: "active",
     affectedArea: 15,
@@ -27,12 +52,12 @@ const mockAlerts = [
   },
   {
     id: "alert-2",
-    type: "warning" as const,
+    type: "warning",
     title: "Low Soil Moisture",
     message: "Soil moisture levels below optimal range in South Field. Consider irrigation.",
     timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
     fieldName: "South Field",
-    severity: "medium" as const,
+    severity: "medium",
     category: "irrigation",
     status: "active",
     affectedArea: 45,
@@ -40,12 +65,12 @@ const mockAlerts = [
   },
   {
     id: "alert-3",
-    type: "info" as const,
+    type: "info",
     title: "Weather Advisory",
     message: "Heavy rainfall expected in the next 48 hours. Prepare drainage systems.",
     timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
     fieldName: "All Fields",
-    severity: "low" as const,
+    severity: "low",
     category: "weather",
     status: "acknowledged",
     affectedArea: 300,
@@ -53,12 +78,12 @@ const mockAlerts = [
   },
   {
     id: "alert-4",
-    type: "warning" as const,
+    type: "warning",
     title: "Disease Risk Elevated",
     message: "Fungal disease conditions favorable in East Field. Monitor closely.",
     timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
     fieldName: "East Field",
-    severity: "medium" as const,
+    severity: "medium",
     category: "disease",
     status: "resolved",
     affectedArea: 25,
@@ -66,12 +91,12 @@ const mockAlerts = [
   },
   {
     id: "alert-5",
-    type: "success" as const,
+    type: "success",
     title: "Irrigation System Activated",
     message: "Automated irrigation successfully activated in response to moisture alert.",
     timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000),
     fieldName: "South Field",
-    severity: "low" as const,
+    severity: "low",
     category: "system",
     status: "resolved",
     affectedArea: 0,
@@ -79,10 +104,11 @@ const mockAlerts = [
   },
 ]
 
+// ------------------ Component ------------------
 export default function AlertsPage() {
-  const [selectedTab, setSelectedTab] = useState("all")
+  const [selectedTab, setSelectedTab] = useState<"all" | "active" | "acknowledged" | "resolved">("all")
   const [searchQuery, setSearchQuery] = useState("")
-  const [notifications, setNotifications] = useState<any[]>([])
+  const [notifications, setNotifications] = useState<Notification[]>([])
 
   const filteredAlerts = mockAlerts.filter((alert) => {
     const matchesSearch =
@@ -92,7 +118,7 @@ export default function AlertsPage() {
     return matchesSearch && matchesTab
   })
 
-  const getAlertIcon = (category: string) => {
+  const getAlertIcon = (category: Alert["category"]) => {
     switch (category) {
       case "pest":
         return Bug
@@ -109,7 +135,7 @@ export default function AlertsPage() {
     }
   }
 
-  const getSeverityColor = (severity: string) => {
+  const getSeverityColor = (severity: Alert["severity"]) => {
     switch (severity) {
       case "critical":
         return "text-destructive"
@@ -122,7 +148,7 @@ export default function AlertsPage() {
     }
   }
 
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status: Alert["status"]) => {
     switch (status) {
       case "active":
         return Clock
@@ -137,12 +163,11 @@ export default function AlertsPage() {
 
   const handleAlertAction = (alertId: string, action: string) => {
     console.log(`${action} alert:`, alertId)
-    // Add notification
     const alert = mockAlerts.find((a) => a.id === alertId)
     if (alert) {
-      const notification = {
+      const notification: Notification = {
         id: `notif-${Date.now()}`,
-        type: "success" as const,
+        type: "success",
         title: `Alert ${action}`,
         message: `${alert.title} has been ${action.toLowerCase()}`,
         timestamp: new Date(),
@@ -182,6 +207,7 @@ export default function AlertsPage() {
 
         {/* Alert Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {/* Critical */}
           <Card className="border-destructive/20 bg-destructive/5">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
@@ -196,6 +222,7 @@ export default function AlertsPage() {
             </CardContent>
           </Card>
 
+          {/* Active */}
           <Card className="border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-900/20">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
@@ -208,6 +235,7 @@ export default function AlertsPage() {
             </CardContent>
           </Card>
 
+          {/* Acknowledged */}
           <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
@@ -220,6 +248,7 @@ export default function AlertsPage() {
             </CardContent>
           </Card>
 
+          {/* Resolved */}
           <Card className="border-primary/20 bg-primary/5">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
@@ -256,7 +285,7 @@ export default function AlertsPage() {
             <CardTitle>Alert Feed</CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+            <Tabs value={selectedTab} onValueChange={(v) => setSelectedTab(v as typeof selectedTab)}>
               <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="all">All ({alertCounts.all})</TabsTrigger>
                 <TabsTrigger value="active">Active ({alertCounts.active})</TabsTrigger>
@@ -294,8 +323,8 @@ export default function AlertsPage() {
                                   alert.severity === "critical"
                                     ? "critical"
                                     : alert.severity === "medium"
-                                      ? "warning"
-                                      : "healthy"
+                                    ? "warning"
+                                    : "healthy"
                                 }
                                 size="sm"
                               />

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
 import { useState } from "react"
@@ -76,7 +77,7 @@ export default function ReportsPage() {
   const [selectedReport, setSelectedReport] = useState("weekly")
   const [isGenerating, setIsGenerating] = useState(false)
 
-  const handleGenerateReport = async (reportId: string) => {
+  const handleGenerateReport = async (_id: string) => {
     setIsGenerating(true)
     // Simulate report generation
     await new Promise((resolve) => setTimeout(resolve, 2000))

@@ -9,8 +9,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MapPin, Search, Filter, Plus, Grid, List, Maximize2 } from "lucide-react"
+import type { Field } from "@/lib/types/agriculture"
 
-const mockFields = [
+const mockFields: Field[] = [
   {
     id: "field-1",
     name: "North Field",
@@ -18,7 +19,7 @@ const mockFields = [
     crop: "Corn",
     plantingDate: "2024-03-15",
     expectedHarvest: "2024-09-15",
-    status: "healthy" as const,
+    status: "healthy",
     location: "40.7128° N, 74.0060° W",
     zones: [
       {
@@ -26,8 +27,8 @@ const mockFields = [
         name: "Zone A",
         x: 25,
         y: 30,
-        status: "healthy" as const,
-        type: "crop" as const,
+        status: "healthy",
+        type: "crop",
         value: "NDVI: 0.85",
         details: "Optimal vegetation health",
       },
@@ -36,8 +37,8 @@ const mockFields = [
         name: "Zone B",
         x: 60,
         y: 45,
-        status: "warning" as const,
-        type: "irrigation" as const,
+        status: "warning",
+        type: "irrigation",
         value: "Moisture: 35%",
         details: "Below optimal moisture levels",
       },
@@ -56,7 +57,7 @@ const mockFields = [
     crop: "Soybeans",
     plantingDate: "2024-04-01",
     expectedHarvest: "2024-10-01",
-    status: "warning" as const,
+    status: "warning",
     location: "40.7100° N, 74.0050° W",
     zones: [
       {
@@ -64,8 +65,8 @@ const mockFields = [
         name: "Zone A",
         x: 40,
         y: 25,
-        status: "warning" as const,
-        type: "pest" as const,
+        status: "warning",
+        type: "pest",
         value: "Pest Risk: Medium",
         details: "Increased aphid activity",
       },
@@ -84,7 +85,7 @@ const mockFields = [
     crop: "Wheat",
     plantingDate: "2024-02-20",
     expectedHarvest: "2024-08-20",
-    status: "critical" as const,
+    status: "critical",
     location: "40.7150° N, 74.0040° W",
     zones: [
       {
@@ -92,8 +93,8 @@ const mockFields = [
         name: "Zone A",
         x: 50,
         y: 60,
-        status: "critical" as const,
-        type: "disease" as const,
+        status: "critical",
+        type: "disease", // ✅ now valid
         value: "Disease Risk: High",
         details: "Fungal infection spreading",
       },
@@ -108,7 +109,7 @@ const mockFields = [
 ]
 
 export default function FieldsPage() {
-  const [selectedField, setSelectedField] = useState(mockFields[0])
+  const [selectedField, setSelectedField] = useState<Field>(mockFields[0])
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [searchQuery, setSearchQuery] = useState("")
 
@@ -121,7 +122,6 @@ export default function FieldsPage() {
   return (
     <div className="flex min-h-screen bg-background">
       <AppSidebar />
-
       <main className="flex-1 md:ml-64 p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -135,10 +135,10 @@ export default function FieldsPage() {
           </Button>
         </div>
 
-        {/* Search and Filters */}
+        {/* Search + Filters */}
         <div className="flex items-center gap-4">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search fields..."
               value={searchQuery}
@@ -164,7 +164,6 @@ export default function FieldsPage() {
           {/* Fields List */}
           <div className="lg:col-span-1 space-y-4">
             <h2 className="text-xl font-semibold">Fields ({filteredFields.length})</h2>
-
             {viewMode === "grid" ? (
               <div className="grid gap-4">
                 {filteredFields.map((field) => (
@@ -262,11 +261,12 @@ export default function FieldsPage() {
                   </TabsList>
 
                   <TabsContent value="map">
-                    <FieldMap
-                      fieldName={selectedField.name}
-                      zones={selectedField.zones}
-                      onZoneClick={(zone) => console.log("Zone clicked:", zone)}
-                    />
+<FieldMap
+  fieldName={selectedField.name}
+  zones={selectedField.zones}
+  onZoneClick={(zone) => console.log("Zone clicked:", zone)}
+/>
+
                   </TabsContent>
 
                   <TabsContent value="details" className="space-y-4">

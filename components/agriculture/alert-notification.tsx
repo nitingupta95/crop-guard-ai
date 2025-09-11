@@ -45,6 +45,7 @@ export function AlertNotification({
 
       return () => clearTimeout(timer)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoClose, autoCloseDelay])
 
   const handleClose = () => {
