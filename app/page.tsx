@@ -1,9 +1,3 @@
-// 1st commit
-//2nd commit 
-// 3rd commit 
-//4th commit 
-
-
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Leaf, BarChart3, AlertTriangle, MapPin } from "lucide-react"
