@@ -28,3 +28,15 @@ export type Field = {
     yieldPrediction: number
   }
 }
+
+
+export type CropHealthData = {
+  fieldId: string
+  fieldName: string
+  totalArea: number
+  healthyArea: number
+  warningArea: number
+  criticalArea: number
+  lastUpdated: Date
+  zones: FieldZone[]
+}
