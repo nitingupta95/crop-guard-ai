@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { 
+import {
   LineChart,
   Line,
   XAxis,
@@ -13,11 +13,12 @@ import {
   Pie,
   Cell,
 } from "recharts"
+
 import {
   Zap,
   Droplet,
   Sprout,
-  DollarSign, 
+  DollarSign,
   Download,
 } from "lucide-react"
 
@@ -98,10 +99,12 @@ export default function AnalyticsPage() {
   return (
     <div className="flex min-h-screen bg-muted/40">
       {/* Sidebar */}
-      <AppSidebar />
+      <div className="w-64 bg-white border-r">
+        <AppSidebar />
+      </div>
 
       {/* Main Content */}
-      <div className="flex-1 bg-muted/40 p-8 space-y-8">
+      <div className="flex-1 p-8 space-y-8 overflow-auto">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -146,7 +149,7 @@ export default function AnalyticsPage() {
           ))}
         </div>
 
-        {/* Analytics Tabs */}
+        {/* Tabs Section */}
         <Tabs defaultValue="yield" className="space-y-6">
           <TabsList className="bg-card shadow-sm rounded-lg p-1">
             <TabsTrigger value="yield" className="rounded-md">
@@ -166,7 +169,6 @@ export default function AnalyticsPage() {
           {/* Yield Analysis */}
           <TabsContent value="yield" className="space-y-6">
             <div className="grid gap-6 lg:grid-cols-3">
-              {/* Yield Prediction Chart */}
               <Card className="lg:col-span-2 rounded-xl shadow-md">
                 <CardHeader>
                   <CardTitle className="text-lg font-bold">
@@ -211,7 +213,6 @@ export default function AnalyticsPage() {
                 </CardContent>
               </Card>
 
-              {/* Crop Distribution */}
               <Card className="rounded-xl shadow-md">
                 <CardHeader>
                   <CardTitle className="text-lg font-bold">
@@ -231,10 +232,7 @@ export default function AnalyticsPage() {
                         dataKey="value"
                       >
                         {cropDistribution.map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={entry.color}
-                          />
+                          <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
                       <Tooltip />
@@ -263,6 +261,8 @@ export default function AnalyticsPage() {
               </Card>
             </div>
           </TabsContent>
+
+          {/* Other Tabs can be similarly filled */}
         </Tabs>
       </div>
     </div>
