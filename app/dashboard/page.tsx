@@ -30,7 +30,7 @@ const mockCropHealthData = [
         y: 30,
         status: "healthy" as const,
         type: "crop" as const,
-        value: "NDVI: 0.85",
+        value: "",
         details: "Optimal vegetation health",
       },
       {
