@@ -22,6 +22,8 @@ const mockCropHealthData = [
     warningArea: 20,
     criticalArea: 5,
     lastUpdated: new Date(),
+    latitude: 40.7128, // New York City coordinates as example
+    longitude: -74.0060,
     zones: [
       {
         id: "zone-1",
@@ -30,8 +32,10 @@ const mockCropHealthData = [
         y: 30,
         status: "healthy" as const,
         type: "crop" as const,
-        value: "",
+        value: "NDVI: 0.85",
         details: "Optimal vegetation health",
+        latitude: 40.7130,
+        longitude: -74.0058,
       },
       {
         id: "zone-2",
@@ -42,6 +46,8 @@ const mockCropHealthData = [
         type: "irrigation" as const,
         value: "Moisture: 35%",
         details: "Below optimal moisture levels",
+        latitude: 40.7126,
+        longitude: -74.0062,
       },
       {
         id: "zone-3",
@@ -52,6 +58,8 @@ const mockCropHealthData = [
         type: "pest" as const,
         value: "Pest Risk: High",
         details: "Aphid infestation detected",
+        latitude: 40.7124,
+        longitude: -74.0064,
       },
     ],
   },
@@ -250,7 +258,11 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Crop Health Map */}
           <div className="lg:col-span-2">
-            <CropHealthMap data={mockCropHealthData} />
+            <CropHealthMap 
+              data={mockCropHealthData} 
+              initialLatitude={mockCropHealthData[0]?.latitude}
+              initialLongitude={mockCropHealthData[0]?.longitude}
+            />
           </div>
 
           {/* Soil Conditions */}

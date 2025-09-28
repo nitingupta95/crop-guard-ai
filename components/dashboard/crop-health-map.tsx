@@ -16,9 +16,11 @@ interface CropHealthMapProps {
   selectedFieldId?: string
   onFieldSelect?: (fieldId: string) => void
   className?: string
+  initialLatitude?: number
+  initialLongitude?: number
 }
 
-export function CropHealthMap({ data, selectedFieldId, onFieldSelect, className }: CropHealthMapProps) {
+export function CropHealthMap({ data, selectedFieldId, onFieldSelect, className, initialLatitude, initialLongitude }: CropHealthMapProps) {
   const [activeField, setActiveField] = useState(selectedFieldId || data[0]?.fieldId)
   const [viewMode, setViewMode] = useState<"satellite" | "health">("health")
   const [isRefreshing, setIsRefreshing] = useState(false)
@@ -103,6 +105,8 @@ export function CropHealthMap({ data, selectedFieldId, onFieldSelect, className 
               fieldName={currentField.fieldName}
               zones={currentField.zones}
               onZoneClick={(zone) => console.log("Zone clicked:", zone)}
+              initialLatitude={initialLatitude || currentField.latitude}
+              initialLongitude={initialLongitude || currentField.longitude}
             />
 
             <div className="grid grid-cols-3 gap-4">
