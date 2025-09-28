@@ -1,44 +1,71 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import dynamic from "next/dynamic"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { MapPin, Zap, Droplets, Bug, Thermometer, Navigation, Loader2, Check, X } from "lucide-react"
-import { cn } from "@/lib/utils"
-import "leaflet/dist/leaflet.css"
-import type * as L from "leaflet"
+import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  MapPin,
+  Zap,
+  Droplets,
+  Bug,
+  Thermometer,
+  Navigation,
+  Loader2,
+  Check,
+  X,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import "leaflet/dist/leaflet.css";
+import type * as L from "leaflet";
 
 // Dynamically import Leaflet components to avoid SSR issues
-const MapContainer = dynamic(() => import("react-leaflet").then(mod => mod.MapContainer), { ssr: false })
-const TileLayer = dynamic(() => import("react-leaflet").then(mod => mod.TileLayer), { ssr: false })
-const Marker = dynamic(() => import("react-leaflet").then(mod => mod.Marker), { ssr: false })
-const Popup = dynamic(() => import("react-leaflet").then(mod => mod.Popup), { ssr: false })
+const MapContainer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.MapContainer),
+  { ssr: false }
+);
+const TileLayer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.TileLayer),
+  { ssr: false }
+);
+const Marker = dynamic(
+  () => import("react-leaflet").then((mod) => mod.Marker),
+  { ssr: false }
+);
+const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
+  ssr: false,
+});
 
 // Draggable Center Marker Component
 interface DraggableMarkerProps {
-  position: [number, number]
-  onPositionChange: (lat: number, lng: number) => void
-  fieldName: string
-  isPendingConfirmation?: boolean
-  isLocationConfirmed?: boolean
+  position: [number, number];
+  onPositionChange: (lat: number, lng: number) => void;
+  fieldName: string;
+  isPendingConfirmation?: boolean;
+  isLocationConfirmed?: boolean;
 }
 
-const DraggableMarker = ({ position, onPositionChange, fieldName, isPendingConfirmation, isLocationConfirmed }: DraggableMarkerProps) => {
-  const [customIcon, setCustomIcon] = useState<L.DivIcon | null>(null)
+const DraggableMarker = ({
+  position,
+  onPositionChange,
+  fieldName,
+  isPendingConfirmation,
+  isLocationConfirmed,
+}: DraggableMarkerProps) => {
+  const [customIcon, setCustomIcon] = useState<L.DivIcon | null>(null);
 
   useEffect(() => {
     const createIcon = async () => {
       if (typeof window !== "undefined") {
         try {
-          const leaflet = await import("leaflet")
-          
+          const leaflet = await import("leaflet");
+
           // Simple draggable location pin with state-based colors
-          const pinColor = isLocationConfirmed ? '#22c55e' : '#3b82f6' // Blue for draggable, green for confirmed
-          
+          const pinColor = isLocationConfirmed ? "#22c55e" : "#3b82f6"; // Blue for draggable, green for confirmed
+
           const icon = leaflet.divIcon({
             html: `<div style="
               background: ${pinColor};
@@ -49,44 +76,44 @@ const DraggableMarker = ({ position, onPositionChange, fieldName, isPendingConfi
               box-shadow: 0 2px 8px rgba(0,0,0,0.3);
               cursor: move;
             "></div>`,
-            className: 'draggable-marker',
+            className: "draggable-marker",
             iconSize: [24, 24],
-            iconAnchor: [12, 12]
-          })
-          
-          setCustomIcon(icon)
+            iconAnchor: [12, 12],
+          });
+
+          setCustomIcon(icon);
         } catch (error) {
-          console.error('Error creating marker icon:', error)
+          console.error("Error creating marker icon:", error);
         }
       }
-    }
-    
-    createIcon()
-  }, [isPendingConfirmation, isLocationConfirmed])
+    };
+
+    createIcon();
+  }, [isPendingConfirmation, isLocationConfirmed]);
 
   const handleDragEnd = (event: L.LeafletEvent) => {
-    const marker = event.target as L.Marker
-    const newPosition = marker.getLatLng()
-    const newLat = newPosition.lat
-    const newLng = newPosition.lng
-    
-    console.log('Marker drag ended at:', newLat, newLng)
-    onPositionChange(newLat, newLng)
-  }
+    const marker = event.target as L.Marker;
+    const newPosition = marker.getLatLng();
+    const newLat = newPosition.lat;
+    const newLng = newPosition.lng;
+
+    console.log("Marker drag ended at:", newLat, newLng);
+    onPositionChange(newLat, newLng);
+  };
 
   const handleDrag = (event: L.LeafletEvent) => {
-    const marker = event.target as L.Marker
-    const newPosition = marker.getLatLng()
-    const newLat = newPosition.lat
-    const newLng = newPosition.lng
-    
-    console.log('Marker being dragged to:', newLat, newLng)
+    const marker = event.target as L.Marker;
+    const newPosition = marker.getLatLng();
+    const newLat = newPosition.lat;
+    const newLng = newPosition.lng;
+
+    console.log("Marker being dragged to:", newLat, newLng);
     // Update coordinates in real-time during drag
-    onPositionChange(newLat, newLng)
-  }
+    onPositionChange(newLat, newLng);
+  };
 
   if (!customIcon) {
-    return null // Don't render until icon is ready
+    return null; // Don't render until icon is ready
   }
 
   return (
@@ -107,50 +134,66 @@ const DraggableMarker = ({ position, onPositionChange, fieldName, isPendingConfi
             📍 Drag this marker to set exact location
           </p>
           <p className="text-xs text-muted-foreground">
-            Lat: {position[0].toFixed(6)}<br/>
+            Lat: {position[0].toFixed(6)}
+            <br />
             Lng: {position[1].toFixed(6)}
           </p>
         </div>
       </Popup>
     </Marker>
-  )
-}
+  );
+};
 
 // Custom Zone Marker Component
 interface ZoneMarkerProps {
-  position: [number, number]
-  zone: FieldZone
-  onZoneClick: (zone: FieldZone) => void
-  selectedZone: FieldZone | null
+  position: [number, number];
+  zone: FieldZone;
+  onZoneClick: (zone: FieldZone) => void;
+  selectedZone: FieldZone | null;
 }
 
-const ZoneMarker = ({ position, zone, onZoneClick, selectedZone }: ZoneMarkerProps) => {
+const ZoneMarker = ({
+  position,
+  zone,
+  onZoneClick,
+  selectedZone,
+}: ZoneMarkerProps) => {
   const getZoneIcon = (type: FieldZone["type"]) => {
     switch (type) {
-      case "crop": return "🌱"
-      case "irrigation": return "💧"
-      case "pest": return "🐛"
-      case "temperature": return "🌡️"
-      case "disease": return "🦠"
-      default: return "📍"
+      case "crop":
+        return "🌱";
+      case "irrigation":
+        return "💧";
+      case "pest":
+        return "🐛";
+      case "temperature":
+        return "🌡️";
+      case "disease":
+        return "🦠";
+      default:
+        return "📍";
     }
-  }
+  };
 
   const getStatusColor = (status: FieldZone["status"]) => {
     switch (status) {
-      case "healthy": return "#22c55e"
-      case "warning": return "#eab308"
-      case "critical": return "#ef4444"
-      default: return "#6b7280"
+      case "healthy":
+        return "#22c55e";
+      case "warning":
+        return "#eab308";
+      case "critical":
+        return "#ef4444";
+      default:
+        return "#6b7280";
     }
-  }
+  };
 
-  const [customIcon, setCustomIcon] = useState<L.DivIcon | null>(null)
-  
+  const [customIcon, setCustomIcon] = useState<L.DivIcon | null>(null);
+
   useEffect(() => {
     const createIcon = async () => {
       if (typeof window !== "undefined") {
-        const leaflet = await import("leaflet")
+        const leaflet = await import("leaflet");
         const iconHtml = `
           <div style="
             background-color: ${getStatusColor(zone.status)}; 
@@ -163,34 +206,38 @@ const ZoneMarker = ({ position, zone, onZoneClick, selectedZone }: ZoneMarkerPro
             font-size: 16px;
             border: 2px solid white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            ${selectedZone?.id === zone.id ? 'border: 3px solid #000; transform: scale(1.2);' : ''}
+            ${
+              selectedZone?.id === zone.id
+                ? "border: 3px solid #000; transform: scale(1.2);"
+                : ""
+            }
           ">
             ${getZoneIcon(zone.type)}
           </div>
-        `
-        
+        `;
+
         const icon = leaflet.divIcon({
           html: iconHtml,
-          className: 'custom-zone-marker',
+          className: "custom-zone-marker",
           iconSize: [32, 32],
           iconAnchor: [16, 16],
-          popupAnchor: [0, -16]
-        })
-        
-        setCustomIcon(icon)
+          popupAnchor: [0, -16],
+        });
+
+        setCustomIcon(icon);
       }
-    }
-    
-    createIcon()
-  }, [zone.status, selectedZone?.id, zone.type, zone.id])
+    };
+
+    createIcon();
+  }, [zone.status, selectedZone?.id, zone.type, zone.id]);
 
   if (!customIcon) {
-    return null // Don't render until icon is ready
+    return null; // Don't render until icon is ready
   }
 
   return (
-    <Marker 
-      position={position} 
+    <Marker
+      position={position}
       icon={customIcon}
       eventHandlers={{
         click: () => onZoneClick(zone),
@@ -200,172 +247,188 @@ const ZoneMarker = ({ position, zone, onZoneClick, selectedZone }: ZoneMarkerPro
         <div className="p-2">
           <h4 className="font-semibold text-sm">{zone.name}</h4>
           <p className="text-xs text-muted-foreground mb-1">
-            Status: <span className={`font-medium ${
-              zone.status === 'healthy' ? 'text-green-600' : 
-              zone.status === 'warning' ? 'text-yellow-600' : 
-              'text-red-600'
-            }`}>
+            Status:{" "}
+            <span
+              className={`font-medium ${
+                zone.status === "healthy"
+                  ? "text-green-600"
+                  : zone.status === "warning"
+                  ? "text-yellow-600"
+                  : "text-red-600"
+              }`}
+            >
               {zone.status.toUpperCase()}
             </span>
           </p>
           <p className="text-xs text-muted-foreground">
-            {zone.type.charAt(0).toUpperCase() + zone.type.slice(1)}: {zone.value}
+            {zone.type.charAt(0).toUpperCase() + zone.type.slice(1)}:{" "}
+            {zone.value}
           </p>
           {zone.details && (
-            <p className="text-xs text-muted-foreground mt-1">
-              {zone.details}
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">{zone.details}</p>
           )}
         </div>
       </Popup>
     </Marker>
-  )
-}
+  );
+};
 
 type FieldZone = {
-  id: string
-  name: string
-  x: number
-  y: number
-  status: "healthy" | "warning" | "critical"
-  type: "crop" | "irrigation" | "pest" | "temperature" | "disease"  
-  value: string
-  details?: string
-  latitude?: number
-  longitude?: number
-}
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+  status: "healthy" | "warning" | "critical";
+  type: "crop" | "irrigation" | "pest" | "temperature" | "disease";
+  value: string;
+  details?: string;
+  latitude?: number;
+  longitude?: number;
+};
 
 interface FieldMapProps {
-  fieldName: string
-  zones: FieldZone[]
-  onZoneClick?: (zone: FieldZone) => void
-  className?: string
-  initialLatitude?: number
-  initialLongitude?: number
+  fieldName: string;
+  zones: FieldZone[];
+  onZoneClick?: (zone: FieldZone) => void;
+  className?: string;
+  initialLatitude?: number;
+  initialLongitude?: number;
 }
 
-export function FieldMap({ fieldName, zones, onZoneClick, className, initialLatitude = 40.7128, initialLongitude = -74.0060 }: FieldMapProps) {
-  const [selectedZone, setSelectedZone] = useState<FieldZone | null>(null)
-  const [animatedZones, setAnimatedZones] = useState<FieldZone[]>([])
-  const [latitude, setLatitude] = useState<number>(initialLatitude)
-  const [longitude, setLongitude] = useState<number>(initialLongitude)
-  const [isMapMode, setIsMapMode] = useState<boolean>(false)
-  const [isClient, setIsClient] = useState(false)
-  const [isGettingLocation, setIsGettingLocation] = useState(false)
-  const [locationError, setLocationError] = useState<string | null>(null)
-  const [isPendingConfirmation, setIsPendingConfirmation] = useState(false)
-  const [isLocationConfirmed, setIsLocationConfirmed] = useState(false)
-  const [isSettingLocation, setIsSettingLocation] = useState(false)
+export function FieldMap({
+  fieldName,
+  zones,
+  onZoneClick,
+  className,
+  initialLatitude = 40.7128,
+  initialLongitude = -74.006,
+}: FieldMapProps) {
+  const [selectedZone, setSelectedZone] = useState<FieldZone | null>(null);
+  const [animatedZones, setAnimatedZones] = useState<FieldZone[]>([]);
+  const [latitude, setLatitude] = useState<number>(initialLatitude);
+  const [longitude, setLongitude] = useState<number>(initialLongitude);
+  const [isMapMode, setIsMapMode] = useState<boolean>(false);
+  const [isClient, setIsClient] = useState(false);
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const [isPendingConfirmation, setIsPendingConfirmation] = useState(false);
+  const [isLocationConfirmed, setIsLocationConfirmed] = useState(false);
+  const [isSettingLocation, setIsSettingLocation] = useState(false);
 
   useEffect(() => {
-    setIsClient(true)
-  }, [])
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     // Animate zones appearing one by one
     zones.forEach((zone, index) => {
       setTimeout(() => {
-        setAnimatedZones((prev) => [...prev, zone])
-      }, index * 200)
-    })
-  }, [zones])
+        setAnimatedZones((prev) => [...prev, zone]);
+      }, index * 200);
+    });
+  }, [zones]);
 
   const getZoneIcon = (type: FieldZone["type"]) => {
     switch (type) {
       case "crop":
-        return Zap
+        return Zap;
       case "irrigation":
-        return Droplets
+        return Droplets;
       case "pest":
-        return Bug
+        return Bug;
       case "temperature":
-        return Thermometer
+        return Thermometer;
       default:
-        return MapPin
+        return MapPin;
     }
-  }
+  };
 
   const getStatusColor = (status: FieldZone["status"]) => {
     switch (status) {
       case "healthy":
-        return "text-primary border-primary bg-primary/10"
+        return "text-primary border-primary bg-primary/10";
       case "warning":
-        return "text-yellow-600 border-yellow-500 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/20"
+        return "text-yellow-600 border-yellow-500 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/20";
       case "critical":
-        return "text-destructive border-destructive bg-destructive/10"
+        return "text-destructive border-destructive bg-destructive/10";
     }
-  }
+  };
 
   const handleZoneClick = (zone: FieldZone) => {
-    setSelectedZone(zone)
-    onZoneClick?.(zone)
-  }
+    setSelectedZone(zone);
+    onZoneClick?.(zone);
+  };
 
   const handleLocationUpdate = () => {
-    setIsGettingLocation(true)
-    setLocationError(null)
+    setIsGettingLocation(true);
+    setLocationError(null);
 
     if (!navigator.geolocation) {
-      setLocationError("Geolocation is not supported by this browser.")
-      setIsGettingLocation(false)
-      return
+      setLocationError("Geolocation is not supported by this browser.");
+      setIsGettingLocation(false);
+      return;
     }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const newLat = position.coords.latitude
-        const newLng = position.coords.longitude
-        setLatitude(newLat)
-        setLongitude(newLng)
-        setIsMapMode(true) // Show map immediately
-        setIsSettingLocation(true) // Enable draggable pin mode
-        setIsGettingLocation(false)
-        setLocationError(null)
-        setIsPendingConfirmation(true) // Show confirm button immediately
-        setIsLocationConfirmed(false) // Not confirmed yet
-        console.log('GPS Success: Map should show with draggable pin at', newLat, newLng)
+        const newLat = position.coords.latitude;
+        const newLng = position.coords.longitude;
+        setLatitude(newLat);
+        setLongitude(newLng);
+        setIsMapMode(true); // Show map immediately
+        setIsSettingLocation(true); // Enable draggable pin mode
+        setIsGettingLocation(false);
+        setLocationError(null);
+        setIsPendingConfirmation(true); // Show confirm button immediately
+        setIsLocationConfirmed(false); // Not confirmed yet
+        console.log(
+          "GPS Success: Map should show with draggable pin at",
+          newLat,
+          newLng
+        );
       },
       (error) => {
-        let errorMessage = "Unable to retrieve your location."
+        let errorMessage = "Unable to retrieve your location.";
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            errorMessage = "Location access denied. Please enable location permissions."
-            break
+            errorMessage =
+              "Location access denied. Please enable location permissions.";
+            break;
           case error.POSITION_UNAVAILABLE:
-            errorMessage = "Location information is unavailable."
-            break
+            errorMessage = "Location information is unavailable.";
+            break;
           case error.TIMEOUT:
-            errorMessage = "Location request timed out."
-            break
+            errorMessage = "Location request timed out.";
+            break;
         }
-        setLocationError(errorMessage)
-        setIsGettingLocation(false)
+        setLocationError(errorMessage);
+        setIsGettingLocation(false);
       },
       {
         enableHighAccuracy: true,
         timeout: 10000,
         maximumAge: 60000,
       }
-    )
-  }
+    );
+  };
 
   const handleMarkerPositionChange = (lat: number, lng: number) => {
-    setLatitude(lat)
-    setLongitude(lng)
-    setIsPendingConfirmation(true)
-    setIsLocationConfirmed(false)
-  }
+    setLatitude(lat);
+    setLongitude(lng);
+    setIsPendingConfirmation(true);
+    setIsLocationConfirmed(false);
+  };
 
   const handleConfirmLocation = () => {
-    setIsPendingConfirmation(false)
-    setIsLocationConfirmed(true)
-    setIsSettingLocation(false) // Exit location setting mode, show zones
-  }
+    setIsPendingConfirmation(false);
+    setIsLocationConfirmed(true);
+    setIsSettingLocation(false); // Exit location setting mode, show zones
+  };
 
   const handleCancelLocation = () => {
-    setIsPendingConfirmation(false)
+    setIsPendingConfirmation(false);
     // Stay in location setting mode for further adjustments
-  }
+  };
 
   return (
     <Card className={cn("overflow-hidden", className)}>
@@ -384,7 +447,11 @@ export function FieldMap({ fieldName, zones, onZoneClick, className, initialLati
             <div className="space-y-2">
               <Label htmlFor="latitude" className="text-sm font-medium">
                 📍 Latitude
-                {isGettingLocation && <span className="text-xs text-primary ml-1">(Getting GPS...)</span>}
+                {isGettingLocation && (
+                  <span className="text-xs text-primary ml-1">
+                    (Getting GPS...)
+                  </span>
+                )}
               </Label>
               <Input
                 id="latitude"
@@ -400,7 +467,11 @@ export function FieldMap({ fieldName, zones, onZoneClick, className, initialLati
             <div className="space-y-2">
               <Label htmlFor="longitude" className="text-sm font-medium">
                 🌐 Longitude
-                {isGettingLocation && <span className="text-xs text-primary ml-1">(Getting GPS...)</span>}
+                {isGettingLocation && (
+                  <span className="text-xs text-primary ml-1">
+                    (Getting GPS...)
+                  </span>
+                )}
               </Label>
               <Input
                 id="longitude"
@@ -414,9 +485,9 @@ export function FieldMap({ fieldName, zones, onZoneClick, className, initialLati
               />
             </div>
             <div className="col-span-2 space-y-2">
-              <Button 
-                onClick={handleLocationUpdate} 
-                className="w-full" 
+              <Button
+                onClick={handleLocationUpdate}
+                className="w-full"
                 size="sm"
                 disabled={isGettingLocation}
               >
@@ -425,20 +496,26 @@ export function FieldMap({ fieldName, zones, onZoneClick, className, initialLati
                 ) : (
                   <Navigation className="h-4 w-4 mr-2" />
                 )}
-                {isGettingLocation ? "Getting GPS Location..." : "Use My GPS Location"}
+                {isGettingLocation
+                  ? "Getting GPS Location..."
+                  : "Use My GPS Location"}
               </Button>
-              {!isGettingLocation && !locationError && !isPendingConfirmation && !isSettingLocation && (
-                <div className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-900/20 p-2 rounded border border-blue-200 dark:border-blue-800">
-                  � Click "Use My GPS Location" to start field mapping
-                </div>
-              )}
+              {!isGettingLocation &&
+                !locationError &&
+                !isPendingConfirmation &&
+                !isSettingLocation && (
+                  <div className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-900/20 p-2 rounded border border-blue-200 dark:border-blue-800">
+                    {' Click "Use My GPS Location" to start field mapping'}
+                  </div>
+                )}
               {isSettingLocation && isPendingConfirmation && (
                 <div className="space-y-2">
                   <div className="text-xs text-primary bg-primary/10 p-2 rounded border border-primary/20">
-                    📍 GPS location found! Drag the blue pin to adjust, then confirm your exact field location
+                    📍 GPS location found! Drag the blue pin to adjust, then
+                    confirm your exact field location
                   </div>
                   <div className="flex gap-2">
-                    <Button 
+                    <Button
                       onClick={handleConfirmLocation}
                       size="sm"
                       className="flex-1"
@@ -446,7 +523,7 @@ export function FieldMap({ fieldName, zones, onZoneClick, className, initialLati
                       <Check className="h-3 w-3 mr-1" />
                       Confirm Location
                     </Button>
-                    <Button 
+                    <Button
                       onClick={handleCancelLocation}
                       variant="outline"
                       size="sm"
@@ -460,7 +537,8 @@ export function FieldMap({ fieldName, zones, onZoneClick, className, initialLati
               )}
               {isLocationConfirmed && (
                 <div className="text-xs text-primary bg-primary/10 p-2 rounded border border-primary/20">
-                  ✅ Location confirmed at {latitude.toFixed(6)}, {longitude.toFixed(6)}
+                  ✅ Location confirmed at {latitude.toFixed(6)},{" "}
+                  {longitude.toFixed(6)}
                 </div>
               )}
               {locationError && (
@@ -500,10 +578,10 @@ export function FieldMap({ fieldName, zones, onZoneClick, className, initialLati
                   style={{ height: "100%", width: "100%" }}
                 >
                   <TileLayer
-                    attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+                    attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
                     url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
                   />
-                  
+
                   {/* Draggable center marker for precise location selection */}
                   <DraggableMarker
                     position={[latitude, longitude]}
@@ -512,27 +590,29 @@ export function FieldMap({ fieldName, zones, onZoneClick, className, initialLati
                     isPendingConfirmation={isPendingConfirmation}
                     isLocationConfirmed={isLocationConfirmed}
                   />
-                  
-                  {/* Zone markers with custom icons - only show after location is confirmed */}
-                  {isLocationConfirmed && animatedZones.map((zone) => {
-                    // Calculate position: if zone has GPS coordinates use them, otherwise offset from center
-                    const zonePosition: [number, number] = zone.latitude && zone.longitude 
-                      ? [zone.latitude, zone.longitude]
-                      : [
-                          latitude + (zone.y - 50) * 0.0001, // Convert percentage to lat offset
-                          longitude + (zone.x - 50) * 0.0001 // Convert percentage to lng offset
-                        ];
 
-                    return (
-                      <ZoneMarker
-                        key={zone.id}
-                        position={zonePosition}
-                        zone={zone}
-                        onZoneClick={handleZoneClick}
-                        selectedZone={selectedZone}
-                      />
-                    );
-                  })}
+                  {/* Zone markers with custom icons - only show after location is confirmed */}
+                  {isLocationConfirmed &&
+                    animatedZones.map((zone) => {
+                      // Calculate position: if zone has GPS coordinates use them, otherwise offset from center
+                      const zonePosition: [number, number] =
+                        zone.latitude && zone.longitude
+                          ? [zone.latitude, zone.longitude]
+                          : [
+                              latitude + (zone.y - 50) * 0.0001, // Convert percentage to lat offset
+                              longitude + (zone.x - 50) * 0.0001, // Convert percentage to lng offset
+                            ];
+
+                      return (
+                        <ZoneMarker
+                          key={zone.id}
+                          position={zonePosition}
+                          zone={zone}
+                          onZoneClick={handleZoneClick}
+                          selectedZone={selectedZone}
+                        />
+                      );
+                    })}
                 </MapContainer>
               ) : (
                 <div className="relative w-full h-full bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/20 dark:to-green-800/20">
@@ -554,7 +634,7 @@ export function FieldMap({ fieldName, zones, onZoneClick, className, initialLati
 
                   {/* Zone markers */}
                   {animatedZones.map((zone) => {
-                    const Icon = getZoneIcon(zone.type)
+                    const Icon = getZoneIcon(zone.type);
                     return (
                       <Button
                         key={zone.id}
@@ -563,7 +643,8 @@ export function FieldMap({ fieldName, zones, onZoneClick, className, initialLati
                         className={cn(
                           "absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 hover:scale-110 animate-in fade-in zoom-in",
                           getStatusColor(zone.status),
-                          selectedZone?.id === zone.id && "ring-2 ring-ring scale-110",
+                          selectedZone?.id === zone.id &&
+                            "ring-2 ring-ring scale-110"
                         )}
                         style={{
                           left: `${zone.x}%`,
@@ -573,7 +654,7 @@ export function FieldMap({ fieldName, zones, onZoneClick, className, initialLati
                       >
                         <Icon className="h-4 w-4" />
                       </Button>
-                    )
+                    );
                   })}
                 </div>
               )}
@@ -585,18 +666,27 @@ export function FieldMap({ fieldName, zones, onZoneClick, className, initialLati
             <div className="mt-4 p-4 bg-muted/50 rounded-lg border animate-in slide-in-from-bottom-2">
               <div className="flex items-center justify-between mb-2">
                 <h4 className="font-medium text-sm">{selectedZone.name}</h4>
-                <Badge variant="outline" className={cn("text-xs", getStatusColor(selectedZone.status))}>
+                <Badge
+                  variant="outline"
+                  className={cn("text-xs", getStatusColor(selectedZone.status))}
+                >
                   {selectedZone.status}
                 </Badge>
               </div>
               <p className="text-sm text-muted-foreground mb-1">
-                {selectedZone.type.charAt(0).toUpperCase() + selectedZone.type.slice(1)}: {selectedZone.value}
+                {selectedZone.type.charAt(0).toUpperCase() +
+                  selectedZone.type.slice(1)}
+                : {selectedZone.value}
               </p>
-              {selectedZone.details && <p className="text-xs text-muted-foreground">{selectedZone.details}</p>}
+              {selectedZone.details && (
+                <p className="text-xs text-muted-foreground">
+                  {selectedZone.details}
+                </p>
+              )}
             </div>
           )}
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
