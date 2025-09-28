@@ -8,6 +8,8 @@ export type FieldZone = {
   type: "crop" | "irrigation" | "pest" | "temperature" | "disease"  // <-- added "disease"
   value: string
   details?: string
+  latitude?: number
+  longitude?: number
 }
 
 
@@ -21,6 +23,8 @@ export type Field = {
   status: "healthy" | "warning" | "critical"
   location: string
   zones: FieldZone[]
+  latitude?: number
+  longitude?: number
   metrics: {
     soilMoisture: number
     cropHealth: number
@@ -39,4 +43,6 @@ export type CropHealthData = {
   criticalArea: number
   lastUpdated: Date
   zones: FieldZone[]
+  latitude?: number
+  longitude?: number
 }
