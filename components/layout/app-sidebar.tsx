@@ -4,8 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "@/components/agriculture/theme-toggle"
-import { Leaf, LayoutDashboard, MapPin, BarChart3, AlertTriangle, FileText, Settings, Menu, X } from "lucide-react"
+import { Leaf, LayoutDashboard, MapPin, BarChart3, AlertTriangle, FileText, Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navigation = [
@@ -71,19 +70,19 @@ export function AppSidebar() {
           </nav>
 
           {/* Footer */}
-          <div className="p-4 border-t border-sidebar-border">
+          {/* <div className="p-4 border-t border-sidebar-border">
             <div className="flex items-center justify-between">
               <Button variant="ghost" size="sm">
                 <Settings className="h-4 w-4" />
               </Button>
               <ThemeToggle />
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
       {/* Overlay for mobile */}
-      {isOpen && <div className="fixed inset-0 bg-black/50 z-30 md:hidden" onClick={() => setIsOpen(false)} />}
+      {/* {isOpen && <div className="fixed inset-0 bg-black/50 z-30 md:hidden" onClick={() => setIsOpen(false)} />} */}
     </>
   )
 }

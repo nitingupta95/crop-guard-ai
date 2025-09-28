@@ -6,19 +6,20 @@ import { Button } from "@/components/ui/button"
 import { StatusBadge } from "@/components/agriculture/status-badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FieldMap } from "@/components/agriculture/field-map"
-import { RefreshCw, Maximize2, Map, Satellite } from "lucide-react"
+import { RefreshCw, Maximize2, Map} from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { CropHealthData } from "@/lib/types/agriculture"
-import { Badge } from "../ui/badge"
 
 interface CropHealthMapProps {
   data: CropHealthData[]
   selectedFieldId?: string
   onFieldSelect?: (fieldId: string) => void
   className?: string
+  initialLatitude?: number
+  initialLongitude?: number
 }
 
-export function CropHealthMap({ data, selectedFieldId, onFieldSelect, className }: CropHealthMapProps) {
+export function CropHealthMap({ data, selectedFieldId, onFieldSelect, className, initialLatitude, initialLongitude }: CropHealthMapProps) {
   const [activeField, setActiveField] = useState(selectedFieldId || data[0]?.fieldId)
   const [viewMode, setViewMode] = useState<"satellite" | "health">("health")
   const [isRefreshing, setIsRefreshing] = useState(false)
@@ -82,15 +83,15 @@ export function CropHealthMap({ data, selectedFieldId, onFieldSelect, className 
 
         <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as "satellite" | "health")}>
           <div className="flex items-center justify-between">
-            <TabsList className="grid w-fit grid-cols-2">
+            <TabsList className="grid w-fit grid-cols-1">
               <TabsTrigger value="health" className="flex items-center gap-2">
-                <Map className="h-4 w-4" />
+                <Map className="h-full w-full" />
                 Health View
               </TabsTrigger>
-              <TabsTrigger value="satellite" className="flex items-center gap-2">
+              {/* <TabsTrigger value="satellite" className="flex items-center gap-2">
                 <Satellite className="h-4 w-4" />
                 Satellite View
-              </TabsTrigger>
+              </TabsTrigger> */}
             </TabsList>
 
             <div className="text-sm text-muted-foreground">
@@ -103,6 +104,8 @@ export function CropHealthMap({ data, selectedFieldId, onFieldSelect, className 
               fieldName={currentField.fieldName}
               zones={currentField.zones}
               onZoneClick={(zone) => console.log("Zone clicked:", zone)}
+              initialLatitude={initialLatitude || currentField.latitude}
+              initialLongitude={initialLongitude || currentField.longitude}
             />
 
             <div className="grid grid-cols-3 gap-4">
@@ -121,7 +124,7 @@ export function CropHealthMap({ data, selectedFieldId, onFieldSelect, className 
             </div>
           </TabsContent>
 
-          <TabsContent value="satellite" className="space-y-4">
+          {/* <TabsContent value="satellite" className="space-y-4">
             <div className="relative w-full h-64 bg-green-200 rounded-lg overflow-hidden">
               <div className="absolute inset-0 bg-[url('/placeholder-nirmx.png')] bg-cover bg-center opacity-60" />
               <div className="absolute inset-0 flex items-center justify-center">
@@ -130,7 +133,7 @@ export function CropHealthMap({ data, selectedFieldId, onFieldSelect, className 
                 </Badge>
               </div>
             </div>
-          </TabsContent>
+          </TabsContent> */}
         </Tabs>
       </CardContent>
     </Card>

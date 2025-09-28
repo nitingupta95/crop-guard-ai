@@ -1,16 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Progress } from "@/components/ui/progress"
-import { TrendPlot } from "@/components/dashboard/trend-plot"
-import { MetricCard } from "@/components/agriculture/metric-card"
 import {
-  BarChart,
-  Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -19,285 +12,259 @@ import {
   PieChart,
   Pie,
   Cell,
-  LineChart,
-  Line,
 } from "recharts"
-import { TrendingUp, Download, Target, Zap, DollarSign } from "lucide-react"
 
- 
+import {
+  Zap,
+  Droplet,
+  Sprout,
+  DollarSign,
+  Download,
+} from "lucide-react"
+
+import { AppSidebar } from "@/components/layout/app-sidebar"
+import { MetricCard } from "@/components/agriculture/metric-card"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState("30d")
 
-  // Mock analytics data
-  const performanceMetrics = [
-    {
-      title: "Predicted Yield",
-      value: "145 bu/ac",
-      change: "+12%",
-      trend: { value: 12, isPositive: true },
-      icon: Target,
-      description: "Expected harvest yield based on AI models",
-    },
-    {
-      title: "Efficiency Score",
-      value: "92%",
-      change: "+8%",
-      trend: { value: 8, isPositive: true },
-      icon: Zap,
-      description: "Overall operational efficiency rating",
-    },
-    {
-      title: "Cost per Acre",
-      value: "$485",
-      change: "-5%",
-      trend: { value: 5, isPositive: false },
-      icon: DollarSign,
-      description: "Average production cost per acre",
-    },
-    {
-      title: "ROI Projection",
-      value: "18.5%",
-      change: "+3.2%",
-      trend: { value: 3.2, isPositive: true },
-      icon: TrendingUp,
-      description: "Projected return on investment",
-    },
-  ]
-
   const yieldData = [
-    { month: "Jan", actual: 0, predicted: 0, target: 0 },
-    { month: "Feb", actual: 0, predicted: 0, target: 0 },
-    { month: "Mar", actual: 15, predicted: 18, target: 20 },
-    { month: "Apr", actual: 35, predicted: 38, target: 40 },
-    { month: "May", actual: 65, predicted: 68, target: 70 },
-    { month: "Jun", actual: 95, predicted: 98, target: 100 },
-    { month: "Jul", actual: 125, predicted: 128, target: 130 },
-    { month: "Aug", actual: 145, predicted: 148, target: 150 },
-    { month: "Sep", actual: null, predicted: 155, target: 160 },
-    { month: "Oct", actual: null, predicted: 145, target: 150 },
+    { month: "Jan", actual: 45, predicted: 48, target: 50 },
+    { month: "Feb", actual: 52, predicted: 50, target: 55 },
+    { month: "Mar", actual: 58, predicted: 55, target: 60 },
+    { month: "Apr", actual: 62, predicted: 60, target: 65 },
+    { month: "May", actual: 68, predicted: 65, target: 70 },
+    { month: "Jun", actual: 72, predicted: 70, target: 75 },
   ]
 
   const cropDistribution = [
-    { name: "Corn", value: 45, color: "#22c55e" },
-    { name: "Soybeans", value: 30, color: "#3b82f6" },
-    { name: "Wheat", value: 20, color: "#f59e0b" },
-    { name: "Other", value: 5, color: "#8b5cf6" },
+    { name: "Rice", value: 40, color: "#22c55e" },
+    { name: "Wheat", value: 30, color: "#3b82f6" },
+    { name: "Corn", value: 20, color: "#f59e0b" },
+    { name: "Soybeans", value: 10, color: "#8b5cf6" },
   ]
 
-  const costBreakdown = [
-    { category: "Seeds", amount: 125, percentage: 26 },
-    { category: "Fertilizer", amount: 145, percentage: 30 },
-    { category: "Pesticides", amount: 85, percentage: 17 },
-    { category: "Fuel", amount: 65, percentage: 13 },
-    { category: "Labor", amount: 45, percentage: 9 },
-    { category: "Equipment", amount: 25, percentage: 5 },
-  ]
-
-  const fieldPerformance = [
-    { field: "North Field", yield: 152, efficiency: 94, cost: 465, roi: 22.1 },
-    { field: "South Field", yield: 138, efficiency: 87, cost: 495, roi: 16.8 },
-    { field: "East Field", yield: 145, efficiency: 91, cost: 475, roi: 19.2 },
-    { field: "West Field", yield: 132, efficiency: 83, cost: 515, roi: 14.5 },
+  const performanceMetrics = [
+    {
+      title: "Yield Efficiency",
+      value: 92,
+      unit: "%",
+      trend: { value: 4.2, isPositive: true },
+      icon: Sprout,
+    },
+    {
+      title: "Water Usage",
+      value: 1200,
+      unit: "L/ha",
+      trend: { value: 8.1, isPositive: false },
+      icon: Droplet,
+    },
+    {
+      title: "Energy Efficiency",
+      value: 87,
+      unit: "%",
+      trend: { value: 3.4, isPositive: true },
+      icon: Zap,
+    },
+    {
+      title: "Revenue/ha",
+      value: 1450,
+      unit: "$",
+      trend: { value: 12.5, isPositive: true },
+      icon: DollarSign,
+    },
   ]
 
   return (
-    <div className="flex-1 space-y-6 p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
-          <p className="text-muted-foreground">Comprehensive farm performance analytics and insights</p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm">
-            <Download className="mr-2 h-4 w-4" />
-            Export Analytics
-          </Button>
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-32">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7d">7 Days</SelectItem>
-              <SelectItem value="30d">30 Days</SelectItem>
-              <SelectItem value="90d">90 Days</SelectItem>
-              <SelectItem value="1y">1 Year</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+    <div className="flex min-h-screen bg-muted/40">
+      {/* Sidebar */}
+      <div className="w-64 bg-white border-r">
+        <AppSidebar />
       </div>
 
-      {/* Performance Metrics */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {performanceMetrics.map((metric, index) => (
-          <MetricCard
-            key={index}
-            title={metric.title}
-            value={metric.value}
-            change={metric.change}
-            trend={metric.trend} 
-            icon={metric.icon}
-            description={metric.description}
-          />
-        ))}
-      </div>
+      {/* Main Content */}
+      <div className="flex-1 p-8 space-y-8 overflow-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+              Analytics Dashboard
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Comprehensive farm performance analytics and insights
+            </p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button variant="outline" size="sm" className="rounded-lg shadow-sm">
+              <Download className="mr-2 h-4 w-4" />
+              Export Analytics
+            </Button>
+            <Select value={timeRange} onValueChange={setTimeRange}>
+              <SelectTrigger className="w-36 rounded-lg">
+                <SelectValue placeholder="Select Range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="7d">7 Days</SelectItem>
+                <SelectItem value="30d">30 Days</SelectItem>
+                <SelectItem value="90d">90 Days</SelectItem>
+                <SelectItem value="1y">1 Year</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
-      {/* Analytics Tabs */}
-      <Tabs defaultValue="yield" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="yield">Yield Analysis</TabsTrigger>
-          <TabsTrigger value="financial">Financial Metrics</TabsTrigger>
-          <TabsTrigger value="efficiency">Efficiency Analysis</TabsTrigger>
-          <TabsTrigger value="comparison">Field Comparison</TabsTrigger>
-        </TabsList>
+        {/* Performance Metrics */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {performanceMetrics.map((metric, index) => (
+            <MetricCard
+              key={index}
+              title={metric.title}
+              value={metric.value}
+              unit={metric.unit}
+              trend={metric.trend}
+              icon={metric.icon}
+              className="rounded-xl shadow-md border bg-card"
+            />
+          ))}
+        </div>
 
-        <TabsContent value="yield" className="space-y-4">
-          <div className="grid gap-4 lg:grid-cols-3">
-            <div className="lg:col-span-2">
-              <Card>
+        {/* Tabs Section */}
+        <Tabs defaultValue="yield" className="space-y-6">
+          <TabsList className="bg-card shadow-sm rounded-lg p-1">
+            <TabsTrigger value="yield" className="rounded-md">
+              Yield Analysis
+            </TabsTrigger>
+            <TabsTrigger value="financial" className="rounded-md">
+              Financial Metrics
+            </TabsTrigger>
+            <TabsTrigger value="efficiency" className="rounded-md">
+              Efficiency Analysis
+            </TabsTrigger>
+            <TabsTrigger value="comparison" className="rounded-md">
+              Field Comparison
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Yield Analysis */}
+          <TabsContent value="yield" className="space-y-6">
+            <div className="grid gap-6 lg:grid-cols-3">
+              <Card className="lg:col-span-2 rounded-xl shadow-md">
                 <CardHeader>
-                  <CardTitle>Yield Prediction vs Actual</CardTitle>
-                  <CardDescription>AI-powered yield forecasting accuracy</CardDescription>
+                  <CardTitle className="text-lg font-bold">
+                    Yield Prediction vs Actual
+                  </CardTitle>
+                  <CardDescription>
+                    AI-powered yield forecasting accuracy
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
+                <CardContent className="p-6">
+                  <ResponsiveContainer width="100%" height={350}>
                     <LineChart data={yieldData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
                       <YAxis />
                       <Tooltip />
-                      <Line type="monotone" dataKey="actual" stroke="#22c55e" strokeWidth={2} name="Actual Yield" />
-                      <Line type="monotone" dataKey="predicted" stroke="#3b82f6" strokeWidth={2} strokeDasharray="5 5" name="Predicted Yield" />
-                      <Line type="monotone" dataKey="target" stroke="#f59e0b" strokeWidth={2} strokeDasharray="10 5" name="Target Yield" />
+                      <Line
+                        type="monotone"
+                        dataKey="actual"
+                        stroke="#22c55e"
+                        strokeWidth={2}
+                        name="Actual Yield"
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="predicted"
+                        stroke="#3b82f6"
+                        strokeWidth={2}
+                        strokeDasharray="5 5"
+                        name="Predicted Yield"
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="target"
+                        stroke="#f59e0b"
+                        strokeWidth={2}
+                        strokeDasharray="10 5"
+                        name="Target Yield"
+                      />
                     </LineChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
-            </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Crop Distribution</CardTitle>
-                <CardDescription>Acreage by crop type</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={200}>
-                  <PieChart>
-                    <Pie data={cropDistribution} cx="50%" cy="50%" innerRadius={40} outerRadius={80} dataKey="value">
-                      {cropDistribution.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="mt-4 space-y-2">
-                  {cropDistribution.map((crop, index) => (
-                    <div key={index} className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: crop.color }} />
-                        <span className="text-sm">{crop.name}</span>
+              <Card className="rounded-xl shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg font-bold">
+                    Crop Distribution
+                  </CardTitle>
+                  <CardDescription>Acreage by crop type</CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <ResponsiveContainer width="100%" height={220}>
+                    <PieChart>
+                      <Pie
+                        data={cropDistribution}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={50}
+                        outerRadius={90}
+                        dataKey="value"
+                      >
+                        {cropDistribution.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="mt-6 space-y-3">
+                    {cropDistribution.map((crop, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <div
+                            className="w-4 h-4 rounded-full"
+                            style={{ backgroundColor: crop.color }}
+                          />
+                          <span className="text-sm">{crop.name}</span>
+                        </div>
+                        <span className="text-sm font-semibold">
+                          {crop.value}%
+                        </span>
                       </div>
-                      <span className="text-sm font-medium">{crop.value}%</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="financial" className="space-y-4">
-          <div className="grid gap-4 lg:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Cost Breakdown</CardTitle>
-                <CardDescription>Production costs by category</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={costBreakdown}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="category" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="amount" fill="#3b82f6" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Cost Analysis</CardTitle>
-                <CardDescription>Detailed cost breakdown per acre</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {costBreakdown.map((item, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>{item.category}</span>
-                      <span className="font-medium">${item.amount}/acre</span>
-                    </div>
-                    <Progress value={item.percentage} className="h-2" />
-                    <div className="text-xs text-muted-foreground text-right">{item.percentage}% of total cost</div>
+                    ))}
                   </div>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
-        <TabsContent value="efficiency" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Operational Efficiency Trends</CardTitle>
-              <CardDescription>Efficiency metrics over time</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {/* <TrendPlot
-                title="Efficiency Score"
-                data={}
-              /> */}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="comparison" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Field Performance Comparison</CardTitle>
-              <CardDescription>Comparative analysis across all fields</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {fieldPerformance.map((field, index) => (
-                  <div key={index} className="grid grid-cols-5 gap-4 p-4 border rounded-lg">
-                    <div className="font-medium">{field.field}</div>
-                    <div className="text-center">
-                      <div className="text-sm text-muted-foreground">Yield</div>
-                      <div className="font-bold">{field.yield} bu/ac</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-sm text-muted-foreground">Efficiency</div>
-                      <div className="font-bold">{field.efficiency}%</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-sm text-muted-foreground">Cost</div>
-                      <div className="font-bold">${field.cost}/ac</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-sm text-muted-foreground">ROI</div>
-                      <div className="font-bold">{field.roi}%</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+          {/* Other Tabs can be similarly filled */}
+        </Tabs>
+      </div>
     </div>
   )
 }
