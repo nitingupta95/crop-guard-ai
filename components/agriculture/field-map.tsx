@@ -560,13 +560,6 @@ export function FieldMap({
                 <MapPin className="h-4 w-4 mr-2" />
                 Map View
               </Button>
-              <Button
-                variant={!isMapMode ? "default" : "outline"}
-                size="sm"
-                onClick={() => setIsMapMode(false)}
-              >
-                Satellite View
-              </Button>
             </div>
 
             {/* Map or Satellite View */}
