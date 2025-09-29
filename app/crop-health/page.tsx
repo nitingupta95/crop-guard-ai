@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { AppSidebar } from "@/components/layout/app-sidebar"
+import { useUserLocation } from "@/hooks/use-user-location"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
@@ -53,6 +54,7 @@ type HealthIssue = {
 }
 
 export default function DashboardPage() {
+  const { userLocation } = useUserLocation()
   const [timeRange, setTimeRange] = useState("7d")
 
   // ✅ MetricCard props fixed (trend + icon type)
@@ -218,7 +220,11 @@ export default function DashboardPage() {
           <TabsContent value="overview" className="space-y-4">
             <div className="grid gap-4 lg:grid-cols-3">
               <div className="lg:col-span-2">
-                <CropHealthMap data={mockCropHealthData} />
+                <CropHealthMap 
+                  data={mockCropHealthData} 
+                  initialLatitude={userLocation?.latitude}
+                  initialLongitude={userLocation?.longitude}
+                />
               </div>
               <Card className="bg-card text-card-foreground">
                 <CardHeader>
