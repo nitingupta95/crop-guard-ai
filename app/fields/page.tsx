@@ -265,6 +265,7 @@ export default function FieldsPage() {
   fieldName={selectedField.name}
   zones={selectedField.zones}
   onZoneClick={(zone) => console.log("Zone clicked:", zone)}
+  allowLocationChange={false}
 />
 
                   </TabsContent>

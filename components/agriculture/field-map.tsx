@@ -19,6 +19,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useUserLocation } from "@/hooks/use-user-location";
 import "leaflet/dist/leaflet.css";
 import type * as L from "leaflet";
 
@@ -293,6 +294,8 @@ interface FieldMapProps {
   className?: string;
   initialLatitude?: number;
   initialLongitude?: number;
+  onLocationSet?: (latitude: number, longitude: number) => void;
+  allowLocationChange?: boolean; // New prop to control if location can be changed
 }
 
 export function FieldMap({
@@ -302,11 +305,14 @@ export function FieldMap({
   className,
   initialLatitude = 40.7128,
   initialLongitude = -74.006,
+  onLocationSet,
+  allowLocationChange = true,
 }: FieldMapProps) {
+  const { userLocation, hasLocation } = useUserLocation();
   const [selectedZone, setSelectedZone] = useState<FieldZone | null>(null);
   const [animatedZones, setAnimatedZones] = useState<FieldZone[]>([]);
-  const [latitude, setLatitude] = useState<number>(initialLatitude);
-  const [longitude, setLongitude] = useState<number>(initialLongitude);
+  const [latitude, setLatitude] = useState<number>(userLocation?.latitude || initialLatitude);
+  const [longitude, setLongitude] = useState<number>(userLocation?.longitude || initialLongitude);
   const [isMapMode, setIsMapMode] = useState<boolean>(false);
   const [isClient, setIsClient] = useState(false);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
@@ -318,6 +324,14 @@ export function FieldMap({
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  // Update coordinates when user location is available
+  useEffect(() => {
+    if (userLocation) {
+      setLatitude(userLocation.latitude);
+      setLongitude(userLocation.longitude);
+    }
+  }, [userLocation]);
 
   useEffect(() => {
     // Animate zones appearing one by one
@@ -423,6 +437,8 @@ export function FieldMap({
     setIsPendingConfirmation(false);
     setIsLocationConfirmed(true);
     setIsSettingLocation(false); // Exit location setting mode, show zones
+    // Call the callback to save location to database
+    onLocationSet?.(latitude, longitude);
   };
 
   const handleCancelLocation = () => {
@@ -489,7 +505,7 @@ export function FieldMap({
                 onClick={handleLocationUpdate}
                 className="w-full"
                 size="sm"
-                disabled={isGettingLocation}
+                disabled={isGettingLocation || (hasLocation && !allowLocationChange)}
               >
                 {isGettingLocation ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -498,6 +514,8 @@ export function FieldMap({
                 )}
                 {isGettingLocation
                   ? "Getting GPS Location..."
+                  : hasLocation && !allowLocationChange
+                  ? "Location Already Set"
                   : "Use My GPS Location"}
               </Button>
               {!isGettingLocation &&
@@ -505,7 +523,9 @@ export function FieldMap({
                 !isPendingConfirmation &&
                 !isSettingLocation && (
                   <div className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-900/20 p-2 rounded border border-blue-200 dark:border-blue-800">
-                    {' Click "Use My GPS Location" to start field mapping'}
+                    {hasLocation && !allowLocationChange
+                      ? `📍 Your saved location: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`
+                      : ' Click "Use My GPS Location" to start field mapping'}
                   </div>
                 )}
               {isSettingLocation && isPendingConfirmation && (
