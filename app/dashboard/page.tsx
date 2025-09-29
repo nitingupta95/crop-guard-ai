@@ -76,6 +76,50 @@ const mockTrendData = [{
   alerts: [],
 }]
 
+// Mock zones for dashboard map (same icons as fields page)
+const mockDashboardZones = [
+  {
+    id: "zone-1",
+    name: "Zone A",
+    x: 25,
+    y: 30,
+    status: "healthy" as const,
+    type: "crop" as const,
+    value: "NDVI: 0.85",
+    details: "Optimal vegetation health",
+  },
+  {
+    id: "zone-2", 
+    name: "Zone B",
+    x: 60,
+    y: 45,
+    status: "warning" as const,
+    type: "irrigation" as const,
+    value: "Moisture: 35%",
+    details: "Below optimal moisture levels",
+  },
+  {
+    id: "zone-3",
+    name: "Zone C", 
+    x: 40,
+    y: 20,
+    status: "healthy" as const,
+    type: "pest" as const,
+    value: "Risk: Low",
+    details: "Minimal pest activity detected",
+  },
+  {
+    id: "zone-4",
+    name: "Zone D",
+    x: 70,
+    y: 25,
+    status: "warning" as const,
+    type: "temperature" as const,
+    value: "Temp: 28°C",
+    details: "Above optimal temperature range",
+  },
+]
+
 function DashboardContent() {
   const [latitude, setLatitude] = useState<number | null>(null)
   const [longitude, setLongitude] = useState<number | null>(null)
@@ -241,7 +285,22 @@ function DashboardContent() {
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="lg:col-span-2">
-                <CropHealthMap data={dashboardData.cropHealthData} initialLatitude={latitude ?? undefined} initialLongitude={longitude ?? undefined} />
+                <CropHealthMap 
+                  data={[{
+                    fieldId: "field-1",
+                    fieldName: "My Field", 
+                    totalArea: 12.5,
+                    healthyArea: 10.6,
+                    warningArea: 1.9,
+                    criticalArea: 0,
+                    lastUpdated: new Date(),
+                    zones: mockDashboardZones,
+                    latitude: latitude ?? undefined,
+                    longitude: longitude ?? undefined
+                  }]} 
+                  initialLatitude={latitude ?? undefined} 
+                  initialLongitude={longitude ?? undefined} 
+                />
               </div>
               <SoilConditionCard data={mockSoilData} />
               <RiskZoneChart data={mockRiskData} />
