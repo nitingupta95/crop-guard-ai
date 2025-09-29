@@ -13,61 +13,56 @@ interface SignupForm {
 }
 
 const styles = {
-  container:
-    "min-h-screen flex items-center justify-center bg-background px-4", // ✅ themed
-  card:
-    "w-full max-w-md bg-card text-card-foreground rounded-2xl shadow-xl p-8", // ✅ themed
-  title: "text-3xl font-bold text-foreground text-center", // ✅ themed
-  subtitle: "mt-2 text-sm text-muted-foreground text-center", // ✅ themed
+  container: "min-h-screen flex items-center justify-center bg-background px-4",
+  card: "w-full max-w-md bg-card text-card-foreground rounded-2xl shadow-xl p-8",
+  title: "text-3xl font-bold text-foreground text-center",
+  subtitle: "mt-2 text-sm text-muted-foreground text-center",
   form: "mt-8 space-y-6",
-  label: "block text-sm font-medium text-foreground mb-1", // ✅ themed
+  label: "block text-sm font-medium text-foreground mb-1",
   inputWrapper: "relative",
   input:
     "w-full pl-10 pr-3 py-3 rounded-lg border border-input focus:border-primary focus:ring-primary " +
-    "bg-background text-foreground placeholder-muted-foreground shadow-sm", // ✅ themed
+    "bg-background text-foreground placeholder-muted-foreground shadow-sm",
   button:
     "w-full bg-primary text-primary-foreground py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 " +
     "hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary " +
-    "disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.01]", // ✅ themed
+    "disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.01]",
   spinner:
     "w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin",
-  footer: "text-center text-sm text-muted-foreground mt-4", // ✅ themed
-  footerLink:
-    "text-primary hover:text-primary/80 font-medium transition-colors", // ✅ themed
+  footer: "text-center text-sm text-muted-foreground mt-4",
+  footerLink: "text-primary hover:text-primary/80 font-medium transition-colors",
 };
 
-// ✅ page component must be default export
 export default function SignupPage() {
-  const [form, setForm] = useState<SignupForm>({
-    name: "",
-    email: "",
-    password: "",
-  });
+  const [form, setForm] = useState<SignupForm>({ name: "", email: "", password: "" });
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (!form.name || !form.email || !form.password) {
-      toast.error("All fields are required");
-      setIsLoading(false);
-      return;
-    }
-    if (form.password.length < 8) {
-      toast.error("Password must be at least 8 characters long");
-      setIsLoading(false);
-      return;
-    }
+    try {
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-    // Save user in localStorage for demo
-    localStorage.setItem("demoUser", JSON.stringify(form));
-    localStorage.setItem("isLoggedIn", "false");
+      const data = await res.json();
 
-    toast.success("Signup successful! Please login.");
-    setIsLoading(false);
-    router.push("/login");
+      if (!res.ok) {
+        toast.error(data.error || "Signup failed");
+      } else {
+        toast.success(data.message || "Signup successful! Please login.");
+        router.push("/login");
+      }
+    } catch (error) {
+      toast.error("Something went wrong. Please try again later.");
+      console.error("Frontend signup error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const updateForm =
@@ -142,7 +137,6 @@ export default function SignupPage() {
             )}
           </button>
 
-          {/* Footer */}
           <div className={styles.footer}>
             Already have an account?{" "}
             <Link href="/login" className={styles.footerLink}>
