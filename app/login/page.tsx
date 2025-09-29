@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import React, { useState } from "react";
 import Link from "next/link";
@@ -12,27 +12,24 @@ interface LoginForm {
 }
 
 const styles = {
-  container:
-    "min-h-screen flex items-center justify-center bg-background px-4", // ✅ themed
-  card:
-    "w-full max-w-md bg-card text-card-foreground rounded-2xl shadow-xl p-8", // ✅ themed
-  title: "text-3xl font-bold text-foreground text-center", // ✅ themed
-  subtitle: "mt-2 text-sm text-muted-foreground text-center", // ✅ themed
+  container: "min-h-screen flex items-center justify-center bg-background px-4",
+  card: "w-full max-w-md bg-card text-card-foreground rounded-2xl shadow-xl p-8",
+  title: "text-3xl font-bold text-foreground text-center",
+  subtitle: "mt-2 text-sm text-muted-foreground text-center",
   form: "mt-8 space-y-6",
-  label: "block text-sm font-medium text-foreground mb-1", // ✅ themed
+  label: "block text-sm font-medium text-foreground mb-1",
   inputWrapper: "relative",
   input:
     "w-full pl-10 pr-3 py-3 rounded-lg border border-input focus:border-primary focus:ring-primary " +
-    "bg-background text-foreground placeholder-muted-foreground shadow-sm", // ✅ themed
+    "bg-background text-foreground placeholder-muted-foreground shadow-sm",
   button:
     "w-full bg-primary text-primary-foreground py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 " +
     "hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary " +
-    "disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.01]", // ✅ themed
+    "disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.01]",
   spinner:
-    "w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin", // ✅ themed
-  footer: "text-center text-sm text-muted-foreground mt-4", // ✅ themed
-  footerLink:
-    "text-primary hover:text-primary/80 font-medium transition-colors", // ✅ themed
+    "w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin",
+  footer: "text-center text-sm text-muted-foreground mt-4",
+  footerLink: "text-primary hover:text-primary/80 font-medium transition-colors",
 };
 
 export default function LoginPage() {
@@ -40,31 +37,37 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    const storedUser = localStorage.getItem("demoUser");
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-    if (!storedUser) {
-      toast.error("No account found. Please sign up first.");
-      setIsLoading(false);
-      return;
-    }
+      const data = await res.json();
 
-    const user = JSON.parse(storedUser);
+      if (!res.ok) {
+        toast.error(data.error || "Login failed");
+        return;
+      }
 
-    if (user.email === form.email && user.password === form.password) {
-      toast.success(`Welcome back, ${user.name}!`);
-      localStorage.setItem("isLoggedIn", "true");
+      // ✅ Save token in localStorage
+      localStorage.setItem("authToken", data.token);
+
+      toast.success("Welcome back!");
       setTimeout(() => {
-        router.push("/dashboard"); // 👈 redirect page after login
+        router.push("/dashboard");
       }, 1000);
-    } else {
-      toast.error("Invalid email or password");
+    } catch (error) {
+      toast.error("Something went wrong");
+      console.error("Login error:", error);
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   const updateForm =

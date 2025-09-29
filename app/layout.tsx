@@ -3,7 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
-
+import { Toaster } from "react-hot-toast";
 export const metadata: Metadata = {
   title: "AgriMonitor - AI Agriculture Platform",
   description:
@@ -21,6 +21,7 @@ export default function RootLayout({
         className={`${GeistSans.variable} ${GeistMono.variable} font-sans antialiased`}
       >
         {children}
+        <Toaster position="top-right" />
         <Analytics />
       </body>
     </html>

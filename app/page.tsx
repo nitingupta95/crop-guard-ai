@@ -1,8 +1,33 @@
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Leaf, BarChart3, AlertTriangle, MapPin } from "lucide-react"
+"use client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Leaf, BarChart3, AlertTriangle, MapPin } from "lucide-react";
 
 export default function HomePage() {
+  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+
+    if (token) {
+      setIsLoggedIn(true);
+      router.push("/dashboard"); // ✅ Auto redirect
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [router]);
+
+  const handleClick = () => {
+    if (isLoggedIn) {
+      router.push("/dashboard");
+    } else {
+      router.push("/signup");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -13,20 +38,6 @@ export default function HomePage() {
               <Leaf className="h-8 w-8 text-primary" />
               <h1 className="text-2xl font-bold text-foreground">AgriMonitor</h1>
             </div>
-            <nav className="hidden md:flex items-center gap-6">
-              <a href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
-                Dashboard
-              </a>
-              <a href="/fields" className="text-muted-foreground hover:text-foreground transition-colors">
-                Fields
-              </a>
-              <a href="/reports" className="text-muted-foreground hover:text-foreground transition-colors">
-                Reports
-              </a>
-              <a href="/alerts" className="text-muted-foreground hover:text-foreground transition-colors">
-                Alerts
-              </a>
-            </nav>
           </div>
         </div>
       </header>
@@ -40,10 +51,10 @@ export default function HomePage() {
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-pretty">
             Real-time insights on crop health, soil conditions, and pest risks to optimize your agricultural operations
           </p>
-          <Button size="lg" className="mr-4">
-            <a href="/dashboard">Get Started</a>
+          <Button size="lg" className="mr-4" onClick={handleClick}>
+            Get Started
           </Button>
-          <Button variant="outline" size="lg">
+          <Button variant="outline" size="lg" disabled>
             View Demo
           </Button>
         </div>
@@ -91,5 +102,5 @@ export default function HomePage() {
         </div>
       </section>
     </div>
-  )
+  );
 }
