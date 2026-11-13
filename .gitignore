@@ -17,61 +17,127 @@
 /build
 /dist
 
-# Environment variables & Configuration
+# ==============================================================================
+# Environment Variables & Configurations
+# ==============================================================================
 .env
 .env*
 .env.local
+.env.*.local
+.env.development
 .env.development.local
+.env.test
 .env.test.local
+.env.production
 .env.production.local
+.env.staging
+.env.staging.local
 *.env
 *.env.*
-*.env.local
-*.env.development
-*.env.test
-*.env.production
 *.envfile
+*.envrc
+.envrc
+.env.vault
+.ENV
+.ENV*
+*.ENV
+*.ENV*
+env.json
+env.yaml
+env.yml
 
-# Keep environment template / example files tracked
+# Keep environment template / example / documentation files tracked
 !.env.example
 !.env.sample
 !.env.template
 !.env.schema
+!.env.defaults
 
-# API keys, secrets & credentials
+# ==============================================================================
+# API Keys, Secrets & Credentials
+# ==============================================================================
+# Common API key and token files
 *api[-_]key*
 *apikey*
+*API[-_]KEY*
+*APIKEY*
 *secret*
+*SECRET*
 *credential*
-credentials.json
-client_secret*.json
-service-account*.json
-firebase-adminsdk*.json
-*-key.json
+*CREDENTIAL*
+*.token
+*.token.*
+*.jwt
+.secrets*
+.secret*
+*.secret
+*.secrets
+
+# Certificates, Keys & Keystores
 *.key
 *.pem
 *.crt
 *.cert
 *.cer
+*.der
 *.pfx
 *.p12
 *.pkcs12
+*.p8
 *.keystore
 *.jks
-*.token
-*.jwt
+*.kdbx
+*.ovpn
+
+# Cloud Providers & Service Account Keys
+credentials.json
+client_secret*.json
+service-account*.json
+service_account*.json
+serviceAccount*.json
+firebase-adminsdk*.json
+google-services.json
+GoogleService-Info.plist
+*-key.json
+*private-key*
+*private_key*
+
+# Authentication & Configs with Secrets
+.npmrc
+.yarnrc
+.netrc
+.htpasswd
+auth.json
+.auth/
+.aws/
+.gcloud/
+.azure/
+
+# SSH Private Keys
 id_rsa*
+id_dsa*
 id_ecdsa*
 id_ed25519*
-.secrets*
 
-# Debug logs
+# Local Overrides, Backups & Dumps
+*.local
+*.bak
+*.backup
+*.save
+*.swp
+
+# ==============================================================================
+# Debug Logs
+# ==============================================================================
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 lerna-debug.log*
 
+# ==============================================================================
+# Frameworks & Tooling
+# ==============================================================================
 # Vercel
 .vercel
 
@@ -82,7 +148,9 @@ next-env.d.ts
 # Prisma
 /lib/generated/prisma
 
-# OS and system files
+# ==============================================================================
+# OS & System Files
+# ==============================================================================
 .DS_Store
 .DS_Store?
 ._*
@@ -90,4 +158,3 @@ next-env.d.ts
 .Trashes
 ehthumbs.db
 Thumbs.db
-
